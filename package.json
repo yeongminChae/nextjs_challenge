@@ -16,6 +16,7 @@
     "@types/react-dom": "18.0.5",
     "autoprefixer": "10.4.7",
     "axios": "^1.6.8",
+    "bcrypt": "^5.1.1",
     "iron-session": "^6.3.1",
     "next": "12.1.6",
     "postcss": "8.4.14",
@@ -30,5 +31,8 @@
   },
   "license": "ISC",
   "keywords": [],
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2"
+  }
 }
