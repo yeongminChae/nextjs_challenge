@@ -1,9 +1,15 @@
 import { NextPage } from "next";
+import { useRouter } from "next/router";
+
 import { useForm } from "react-hook-form";
+import { mutate } from "swr";
+import axios, { AxiosResponse } from "axios";
+import { useEffect } from "react";
 
 interface ILoginForm {
   email: string;
   password: string;
+  ok: boolean;
 }
 
 const Home: NextPage = () => {
@@ -11,10 +17,22 @@ const Home: NextPage = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ILoginForm>({ mode: "onSubmit" });
+  } = useForm<ILoginForm>({ mode: "onBlur" });
+  const router = useRouter();
+  const onSubmit = async (data: ILoginForm) => {
+    try {
+      const response = await axios.post("/api/auth/login", data);
 
-  const onSubmit = (data: ILoginForm) => {
-    console.log(data);
+      await mutate(`/api/auth/profile`, data?.ok);
+
+      if (response?.data?.ok) {
+        router.push("/");
+      } else {
+        alert("An error occurred");
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -38,7 +56,7 @@ const Home: NextPage = () => {
           required
           placeholder="Password"
         />
-        <input type="submit" />
+        <input type="submit" className="cursor-pointer" value="login" />
       </form>
     </div>
   );
