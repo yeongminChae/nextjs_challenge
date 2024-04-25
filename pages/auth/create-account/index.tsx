@@ -1,5 +1,7 @@
 import { NextPage } from "next";
 import { useForm } from "react-hook-form";
+import axios from "axios";
+import { useRouter } from "next/router";
 
 interface ISignUpForm {
   email: string;
@@ -15,10 +17,16 @@ const Home: NextPage = () => {
     watch,
     formState: { errors },
   } = useForm<ISignUpForm>({ mode: "onSubmit" });
-
+  const router = useRouter();
   const password = watch("password");
-  const onSubmit = (data: ISignUpForm) => {
-    console.log(data);
+
+  const onSubmit = async (data: ISignUpForm) => {
+    try {
+      await axios.post("/api/auth/signup", data);
+      router.push("/auth/login");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
