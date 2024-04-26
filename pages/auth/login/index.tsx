@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import useSWR, { mutate } from "swr";
 import axios, { AxiosResponse } from "axios";
 
-import { ProfileResponse } from "@pages/profile";
+import { isUserLoggedIn } from "@libs/client/isUserLoggedIn";
 
 interface ILoginForm {
   email: string;
@@ -20,7 +20,7 @@ const Home: NextPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<ILoginForm>({ mode: "onSubmit" });
-  const { isLoading } = isLoggedInUser();
+  const { isLoading } = isUserLoggedIn();
 
   const onSubmit = async (data: ILoginForm) => {
     try {
@@ -59,16 +59,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-const isLoggedInUser = () => {
-  const { data, error } = useSWR<ProfileResponse>("/api/auth/profile");
-  const router = useRouter();
-
-  useEffect(() => {
-    if (data && data?.ok) {
-      router.replace("/");
-    }
-  }, [data, router]);
-
-  return { isLoading: !data && !error };
-};

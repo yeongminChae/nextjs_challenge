@@ -6,7 +6,7 @@ import Link from "next/link";
 import useSWR from "swr";
 import { Tweet } from "@prisma/client";
 
-import { ProfileResponse } from "./profile";
+import { isUserLoggedIn } from "@libs/client/isUserLoggedIn";
 
 export interface ITweetstResponseWithCount extends Tweet {
   _count: {
@@ -20,7 +20,7 @@ interface ITweetResponse {
 }
 
 const Home: NextPage = () => {
-  const { user, isLoading } = useIsUser();
+  const { user, isLoading } = isUserLoggedIn();
   const { data, error } = useSWR<ITweetResponse>("/api/tweet");
 
   return (
@@ -54,16 +54,3 @@ const Home: NextPage = () => {
 };
 
 export default Home;
-
-const useIsUser = () => {
-  const { data, error } = useSWR<ProfileResponse>("/api/auth/profile");
-  const router = useRouter();
-
-  useEffect(() => {
-    if (data && !data?.ok) {
-      router.replace("/auth/login");
-    }
-  }, [data, router]);
-
-  return { user: data?.profile, isLoading: !data && !error };
-};
