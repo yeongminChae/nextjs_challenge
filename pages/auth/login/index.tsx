@@ -1,10 +1,12 @@
 import { NextPage } from "next";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 import { useForm } from "react-hook-form";
-import { mutate } from "swr";
+import useSWR, { mutate } from "swr";
 import axios, { AxiosResponse } from "axios";
-import { useEffect } from "react";
+
+import { ProfileResponse } from "@pages/profile";
 
 interface ILoginForm {
   email: string;
@@ -17,19 +19,13 @@ const Home: NextPage = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ILoginForm>({ mode: "onBlur" });
-  const router = useRouter();
+  } = useForm<ILoginForm>({ mode: "onSubmit" });
+  const { isLoading } = isLoggedInUser();
+
   const onSubmit = async (data: ILoginForm) => {
     try {
       const response = await axios.post("/api/auth/login", data);
-
-      await mutate(`/api/auth/profile`, data?.ok);
-
-      if (response?.data?.ok) {
-        router.push("/");
-      } else {
-        alert("An error occurred");
-      }
+      mutate(`/api/auth/profile`, { ...data, ok: response?.data?.ok }, false);
     } catch (error) {
       console.log(error);
     }
@@ -63,3 +59,16 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
+const isLoggedInUser = () => {
+  const { data, error } = useSWR<ProfileResponse>("/api/auth/profile");
+  const router = useRouter();
+
+  useEffect(() => {
+    if (data && data?.ok) {
+      router.replace("/");
+    }
+  }, [data, router]);
+
+  return { isLoading: !data && !error };
+};

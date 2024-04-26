@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 import useSWR from "swr";
-import { Tweet, User } from "@prisma/client";
-import Link from "next/link";
+import { Tweet } from "@prisma/client";
+
 import { ProfileResponse } from "./profile";
 
 export interface ITweetstResponseWithCount extends Tweet {
@@ -54,7 +55,7 @@ const Home: NextPage = () => {
 
 export default Home;
 
-export const useIsUser = () => {
+const useIsUser = () => {
   const { data, error } = useSWR<ProfileResponse>("/api/auth/profile");
   const router = useRouter();
 
