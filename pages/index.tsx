@@ -3,30 +3,58 @@ import { NextPage } from "next";
 import { useRouter } from "next/router";
 
 import useSWR from "swr";
-import { User } from "@prisma/client";
+import { Tweet, User } from "@prisma/client";
 import Link from "next/link";
+import { ProfileResponse } from "./profile";
 
-export interface ProfileResponse {
+export interface ITweetstResponseWithCount extends Tweet {
+  _count: {
+    favs: number;
+  };
+}
+
+interface ITweetResponse {
+  tweets: ITweetstResponseWithCount[];
   ok: boolean;
-  profile: User;
 }
 
 const Home: NextPage = () => {
   const { user, isLoading } = useIsUser();
+  const { data, error } = useSWR<ITweetResponse>("/api/tweet");
 
   return (
-    <div>
+    <div className="flex flex-col items-center justify-center w-full h-screen gap-10">
       <h1> Hello {user?.name} </h1>
-      <Link href="/tweet/create">
-        <a> Link: Tweet Create Page </a>
-      </Link>
+      <div className="flex flex-col gap-3">
+        <Link href="/profile">
+          <a> Link: To My profile page </a>
+        </Link>
+        <Link href="/tweet/create">
+          <a> Link: Tweet Create Page </a>
+        </Link>
+      </div>
+      {data?.tweets?.map((tweet) => {
+        return (
+          <div
+            key={tweet?.id}
+            id={tweet?.id + ""}
+            className="flex flex-col gap-5"
+          >
+            <Link href={`/tweet/${tweet?.id}`}>
+              <a>{tweet?.title}</a>
+            </Link>
+            <span>좋아요 수 : {tweet?._count?.favs}</span>
+            <p>{tweet?.content}</p>
+          </div>
+        );
+      })}
     </div>
   );
 };
 
 export default Home;
 
-const useIsUser = () => {
+export const useIsUser = () => {
   const { data, error } = useSWR<ProfileResponse>("/api/auth/profile");
   const router = useRouter();
 
