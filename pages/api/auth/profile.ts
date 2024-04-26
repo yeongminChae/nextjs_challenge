@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-import { withApiSession } from "@libs/withSession";
-import db from "@libs/db";
+import { withApiSession } from "@libs/server/withSession";
+import db from "@libs/server/db";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method != "GET") {

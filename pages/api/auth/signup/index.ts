@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 
-import db from "@libs/db";
+import db from "@libs/server/db";
 
 export default async function handler(
   req: NextApiRequest,

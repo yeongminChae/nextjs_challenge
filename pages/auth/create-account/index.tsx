@@ -17,6 +17,7 @@ const Home: NextPage = () => {
     watch,
     formState: { errors },
   } = useForm<ISignUpForm>({ mode: "onSubmit" });
+
   const router = useRouter();
   const password = watch("password");
 
