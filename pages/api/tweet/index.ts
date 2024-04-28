@@ -17,6 +17,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
               favs: true,
             },
           },
+          author: {
+            select: {
+              name: true,
+            },
+          },
         },
       });
 
