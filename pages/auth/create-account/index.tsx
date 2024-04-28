@@ -1,13 +1,18 @@
 import { NextPage } from "next";
 import { useForm } from "react-hook-form";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 interface ISignUpForm {
   email: string;
   name: string;
   password: string;
   passwordCheck: string;
+}
+
+export interface IErrorResponse {
+  message: string;
 }
 
 const Home: NextPage = () => {
@@ -26,12 +31,13 @@ const Home: NextPage = () => {
       await axios.post("/api/auth/signup", data);
       router.push("/auth/login");
     } catch (error) {
-      console.log(error);
+      const axiosError = error as AxiosError<IErrorResponse>;
+      alert(axiosError.response?.data?.message);
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-screen gap-20">
+    <div className="flex flex-col items-center justify-center w-full h-screen gap-10">
       <h1>Sign Up</h1>
       <form
         onSubmit={handleSubmit(onSubmit)}
@@ -68,8 +74,13 @@ const Home: NextPage = () => {
           required
           placeholder="Password Check"
         />
+        {errors.passwordCheck && <p>{errors.passwordCheck.message}</p>}
         <input type="submit" value="Sign Up" className="cursor-pointer" />
       </form>
+
+      <Link href="/auth/login">
+        <a>로그인 하러가기</a>
+      </Link>
     </div>
   );
 };

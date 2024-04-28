@@ -4,9 +4,11 @@ import { useEffect } from "react";
 
 import { useForm } from "react-hook-form";
 import useSWR, { mutate } from "swr";
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 
 import { isUserLoggedIn } from "@libs/client/isUserLoggedIn";
+import Link from "next/link";
+import { IErrorResponse } from "../create-account";
 
 interface ILoginForm {
   email: string;
@@ -27,7 +29,8 @@ const Home: NextPage = () => {
       const response = await axios.post("/api/auth/login", data);
       mutate(`/api/auth/profile`, { ...data, ok: response?.data?.ok }, false);
     } catch (error) {
-      console.log(error);
+      const axiosError = error as AxiosError<IErrorResponse>;
+      alert(axiosError.response?.data?.message);
     }
   };
 
@@ -54,6 +57,10 @@ const Home: NextPage = () => {
         />
         <input type="submit" className="cursor-pointer" value="login" />
       </form>
+
+      <Link href="/auth/create-account">
+        <a>회원가입 하러가기</a>
+      </Link>
     </div>
   );
 };
